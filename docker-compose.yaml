@@ -20,3 +20,15 @@ services:
       # '/data' is the path Actual will look for its files in by default, so leave that as-is.
       - ./actual-data:/data
     restart: unless-stopped
+  tracker:
+    build: ../niraj8/things/track
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      GOOGLE_SHEETS_API_KEY: ${GOOGLE_SHEETS_API_KEY}
+      SPREADSHEET_ID: ${SPREADSHEET_ID}
+      SHEET_NAME: ${SHEET_NAME}
+    env_file:
+      - .env
+    restart: unless-stopped

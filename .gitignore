@@ -1,1 +1,3 @@
 actual-data/
+.DS_Store
+.env
