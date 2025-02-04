@@ -1,3 +1,4 @@
-actual-data/
+*-data/
 .DS_Store
 .env
+omnivore/
