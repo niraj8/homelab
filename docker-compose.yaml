@@ -31,6 +31,8 @@ services:
       SHEET_NAME: ${SHEET_NAME}
     env_file:
       - .env
+    volumes:
+      - ./data/tracker:/data
     restart: unless-stopped
   grafana:
     image: grafana/grafana-enterprise
