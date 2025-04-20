@@ -42,3 +42,42 @@ services:
   #    - '3001:3000'
   #   volumes:
   #     - '$PWD/data/grafana:/var/lib/grafana'
+
+  #########################################################################################
+  # Archivebox
+  # sourced from https://github.com/ArchiveBox/ArchiveBox/blob/dev/docker-compose.yml
+  #########################################################################################
+  archivebox:
+    image: archivebox/archivebox:latest
+    ports:
+        - 8000:8000
+    volumes:
+        - ./data/archivebox:/data
+    environment:
+        - ALLOWED_HOSTS=*                   # set this to the hostname(s) you're going to serve the site from!
+        - CSRF_TRUSTED_ORIGINS=http://localhost:8000  # you MUST set this to the server's URL for admin login and the REST API to work
+        - PUBLIC_INDEX=True                 # set to False to prevent anonymous users from viewing snapshot list
+        - PUBLIC_SNAPSHOTS=True             # set to False to prevent anonymous users from viewing snapshot content
+        - PUBLIC_ADD_VIEW=False             # set to True to allow anonymous users to submit new URLs to archive
+        - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
+        - SEARCH_BACKEND_HOST_NAME=sonic
+        - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
+  archivebox_scheduler:
+      image: archivebox/archivebox:latest
+      command: schedule --foreground --update --every=day
+      environment:
+          - TIMEOUT=120                       # use a higher timeout than the main container to give slow tasks more time when retrying
+          - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
+          - SEARCH_BACKEND_HOST_NAME=sonic
+          - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
+      volumes:
+          - ./data/archivebox:/data
+  sonic:
+      image: archivebox/sonic:latest
+      expose:
+          - 1491
+      environment:
+          - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
+      volumes:
+          #- ./sonic.cfg:/etc/sonic.cfg:ro    # mount to customize: https://raw.githubusercontent.com/ArchiveBox/ArchiveBox/stable/etc/sonic.cfg
+          - ./data/archivebox/sonic:/var/lib/sonic/store
