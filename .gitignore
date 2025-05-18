@@ -6,3 +6,5 @@ omnivore/
 .envrc
 .tmp.driveupload/
 .tmp.drivedownload/
+certs/
+index.html
