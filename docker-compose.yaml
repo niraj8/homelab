@@ -87,4 +87,5 @@ services:
       - "80:80"
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html
+      - ./favicon.ico:/usr/share/nginx/html/favicon.ico
     restart: unless-stopped
