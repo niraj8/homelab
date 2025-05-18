@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+given a screenshot of transactions, return a csv file with 3 headers: date, desc, amount
+
+`date` format: dd-mm-yyyy
+`desc` should either be the merchant name, prefer smallcase
+`amount` dont write commas as this may break the csv file. use minus sign for debit, + sign for credits
+
+- write this file in data/credit-card-statements/<card-last-4-digits>-<month>-<year>.csv
+- card last 4 digit will be visible in the screenshot, so will month
+- in case year isn't seen in the image, default to 2025
