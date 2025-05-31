@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "actual-budget"
+    static_configs:
+      - targets: ["actual-budget-prometheus-exporter:3001"]

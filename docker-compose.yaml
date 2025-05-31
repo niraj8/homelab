@@ -1,6 +1,7 @@
 services:
   actual_server:
-    image: docker.io/actualbudget/actual-server:latest-alpine
+    # FIXME exporter breaks because of the edge image, use latest when missing db migrations are available in the stable latest image
+    image: docker.io/actualbudget/actual-server:edge
     ports:
       # This line makes Actual available at port 5006 of the device you run the server on,
       # i.e. http://localhost:5006. You can change the first number to change the port, if you want.
@@ -20,6 +21,24 @@ services:
       # '/data' is the path Actual will look for its files in by default, so leave that as-is.
       - ./data/actual-budget:/data
     restart: unless-stopped
+
+  actual-budget-prometheus-exporter:
+    image: docker.io/sakowicz/actual-budget-prometheus-exporter:latest
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    environment:
+      ACTUAL_SERVER_URL: http://actual_server:5006
+      ACTUAL_PASSWORD: ${ACTUAL_PASSWORD}
+      ACTUAL_BUDGET_ID_1: ${ACTUAL_BUDGET_ID_1} # This is the ID from Settings → Show advanced settings → Sync ID
+      #ACTUAL_E2E_PASSWORD_1: # optional. required if you have E2E encryption
+      #ACTUAL_BUDGET_NAME_1: # optional. this is custom name, helpful if you have multiple budgets. Will be added to prometheus label
+      # If you want to track multiple budgets, you can add more environment variables
+      #ACTUAL_BUDGET_ID_2:
+      #ACTUAL_E2E_PASSWORD_2:
+      #ACTUAL_BUDGET_NAME_2:
+      #NODE_TLS_REJECT_UNAUTHORIZED: 0
+
   tracker:
     build: ../niraj8/track
     ports:
@@ -30,18 +49,10 @@ services:
       SPREADSHEET_ID: ${SPREADSHEET_ID}
       SHEET_NAME: ${SHEET_NAME}
     env_file:
-      - .env
+      - tracker.env
     volumes:
       - ./data/tracker:/data
     restart: unless-stopped
-  # grafana:
-  #   image: grafana/grafana-enterprise
-  #   container_name: grafana
-  #   restart: unless-stopped
-  #   ports:
-  #    - '3001:3000'
-  #   volumes:
-  #     - '$PWD/data/grafana:/var/lib/grafana'
 
   #########################################################################################
   # Archivebox
@@ -89,3 +100,20 @@ services:
       - ./index.html:/usr/share/nginx/html/index.html
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
     restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./data/prometheus:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+     - '9091:3000'
+    volumes:
+      - ./data/grafana:/var/lib/grafana
