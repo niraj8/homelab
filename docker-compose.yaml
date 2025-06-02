@@ -43,13 +43,10 @@ services:
     build: ../niraj8/track
     ports:
       - "3000:3000"
-    environment:
-      NODE_ENV: production
-      GOOGLE_SHEETS_API_KEY: ${GOOGLE_SHEETS_API_KEY}
-      SPREADSHEET_ID: ${SPREADSHEET_ID}
-      SHEET_NAME: ${SHEET_NAME}
     env_file:
       - tracker.env
+    environment:
+      NODE_ENV: production
     volumes:
       - ./data/tracker:/data
     restart: unless-stopped
