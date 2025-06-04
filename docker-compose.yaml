@@ -1,15 +1,13 @@
 services:
   actual_server:
-    # FIXME exporter breaks because of the edge image, use latest when missing db migrations are available in the stable latest image
-    image: docker.io/actualbudget/actual-server:edge
+    image: docker.io/actualbudget/actual-server:25.6.0
+    container_name: actual_server
     ports:
-      # This line makes Actual available at port 5006 of the device you run the server on,
-      # i.e. http://localhost:5006. You can change the first number to change the port, if you want.
       - '5006:5006'
-    environment: 
+    # environment: 
       # Uncomment any of the lines below to set configuration options.
-      - ACTUAL_HTTPS_KEY=${ACTUAL_HTTPS_KEY}
-      - ACTUAL_HTTPS_CERT=${ACTUAL_HTTPS_CERT}
+      # - ACTUAL_HTTPS_KEY=${ACTUAL_HTTPS_KEY}
+      # - ACTUAL_HTTPS_CERT=${ACTUAL_HTTPS_CERT}
       # - ACTUAL_PORT=5006
       # - ACTUAL_UPLOAD_FILE_SYNC_SIZE_LIMIT_MB=20
       # - ACTUAL_UPLOAD_SYNC_ENCRYPTED_FILE_SYNC_SIZE_LIMIT_MB=50
@@ -22,8 +20,10 @@ services:
       - ./data/actual-budget:/data
     restart: unless-stopped
 
-  actual-budget-prometheus-exporter:
-    image: docker.io/sakowicz/actual-budget-prometheus-exporter:latest
+  actual_budget_prometheus_exporter:
+    # image: docker.io/sakowicz/actual-budget-prometheus-exporter:latest
+    build: ../oss/actual-budget-prometheus-exporter
+    container_name: actual_budget_prometheus_exporter
     restart: unless-stopped
     ports:
       - '3001:3001'
@@ -31,16 +31,12 @@ services:
       ACTUAL_SERVER_URL: http://actual_server:5006
       ACTUAL_PASSWORD: ${ACTUAL_PASSWORD}
       ACTUAL_BUDGET_ID_1: ${ACTUAL_BUDGET_ID_1} # This is the ID from Settings → Show advanced settings → Sync ID
-      #ACTUAL_E2E_PASSWORD_1: # optional. required if you have E2E encryption
-      #ACTUAL_BUDGET_NAME_1: # optional. this is custom name, helpful if you have multiple budgets. Will be added to prometheus label
-      # If you want to track multiple budgets, you can add more environment variables
-      #ACTUAL_BUDGET_ID_2:
-      #ACTUAL_E2E_PASSWORD_2:
-      #ACTUAL_BUDGET_NAME_2:
-      #NODE_TLS_REJECT_UNAUTHORIZED: 0
+      #ACTUAL_E2E_PASSWORD_1: # optional. required if you have E2E encryption 
+
 
   tracker:
     build: ../niraj8/track
+    container_name: tracker
     ports:
       - "3000:3000"
     env_file:
@@ -57,6 +53,7 @@ services:
   #########################################################################################
   archivebox:
     image: archivebox/archivebox:latest
+    container_name: archivebox
     ports:
         - 8000:8000
     volumes:
@@ -71,41 +68,35 @@ services:
         - SEARCH_BACKEND_HOST_NAME=sonic
         - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
   archivebox_scheduler:
-      image: archivebox/archivebox:latest
-      command: schedule --foreground --update --every=day
-      environment:
-          - TIMEOUT=120                       # use a higher timeout than the main container to give slow tasks more time when retrying
-          - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
-          - SEARCH_BACKEND_HOST_NAME=sonic
-          - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
-      volumes:
-          - ./data/archivebox:/data
+    image: archivebox/archivebox:latest
+    container_name: archivebox_scheduler
+    command: schedule --foreground --update --every=day
+    environment:
+        - TIMEOUT=120                       # use a higher timeout than the main container to give slow tasks more time when retrying
+        - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
+        - SEARCH_BACKEND_HOST_NAME=sonic
+        - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
+    volumes:
+        - ./data/archivebox:/data
   sonic:
-      image: archivebox/sonic:latest
-      expose:
-          - 1491
-      environment:
-          - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
-      volumes:
-          #- ./sonic.cfg:/etc/sonic.cfg:ro    # mount to customize: https://raw.githubusercontent.com/ArchiveBox/ArchiveBox/stable/etc/sonic.cfg
-          - ./data/archivebox/sonic:/var/lib/sonic/store
+    image: archivebox/sonic:latest
+    container_name: archivebox_sonic
+    expose:
+        - 1491
+    environment:
+        - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
+    volumes:
+        #- ./sonic.cfg:/etc/sonic.cfg:ro    # mount to customize: https://raw.githubusercontent.com/ArchiveBox/ArchiveBox/stable/etc/sonic.cfg
+        - ./data/archivebox/sonic:/var/lib/sonic/store
   nginx:
     image: nginx:alpine
+    container_name: nginx
     ports:
       - "80:80"
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
     restart: unless-stopped
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./data/prometheus:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    restart: unless-stopped
-
   grafana:
     image: grafana/grafana-enterprise
     container_name: grafana
@@ -114,3 +105,12 @@ services:
      - '9091:3000'
     volumes:
       - ./data/grafana:/var/lib/grafana
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./data/prometheus:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
