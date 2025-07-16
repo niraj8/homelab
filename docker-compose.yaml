@@ -1,6 +1,6 @@
 services:
   actual_server:
-    image: docker.io/actualbudget/actual-server:25.6.0
+    image: docker.io/actualbudget/actual-server:25.7.1
     container_name: actual_server
     ports:
       - '5006:5006'
@@ -19,20 +19,6 @@ services:
       # '/data' is the path Actual will look for its files in by default, so leave that as-is.
       - ./data/actual-budget:/data
     restart: unless-stopped
-
-  actual_budget_prometheus_exporter:
-    # image: docker.io/sakowicz/actual-budget-prometheus-exporter:latest
-    build: ../oss/actual-budget-prometheus-exporter
-    container_name: actual_budget_prometheus_exporter
-    restart: unless-stopped
-    ports:
-      - '3001:3001'
-    environment:
-      ACTUAL_SERVER_URL: http://actual_server:5006
-      ACTUAL_PASSWORD: ${ACTUAL_PASSWORD}
-      ACTUAL_BUDGET_ID_1: ${ACTUAL_BUDGET_ID_1} # This is the ID from Settings → Show advanced settings → Sync ID
-      #ACTUAL_E2E_PASSWORD_1: # optional. required if you have E2E encryption 
-
 
   tracker:
     build: ../niraj8/track
@@ -89,7 +75,7 @@ services:
         #- ./sonic.cfg:/etc/sonic.cfg:ro    # mount to customize: https://raw.githubusercontent.com/ArchiveBox/ArchiveBox/stable/etc/sonic.cfg
         - ./data/archivebox/sonic:/var/lib/sonic/store
   nginx:
-    image: nginx:alpine
+    image: nginx:1.29.0-alpine
     container_name: nginx
     ports:
       - "80:80"
@@ -97,20 +83,32 @@ services:
       - ./index.html:/usr/share/nginx/html/index.html
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
     restart: unless-stopped
-  grafana:
-    image: grafana/grafana-enterprise
-    container_name: grafana
-    restart: unless-stopped
+  # grafana:
+  #   image: grafana/grafana-enterprise
+  #   container_name: grafana
+  #   restart: unless-stopped
+  #   ports:
+  #    - '9091:3000'
+  #   volumes:
+  #     - ./data/grafana:/var/lib/grafana
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./data/prometheus:/prometheus
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   restart: unless-stopped
+  postgres:
+    image: postgres:16
     ports:
-     - '9091:3000'
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: upsite_dev
     volumes:
-      - ./data/grafana:/var/lib/grafana
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./data/prometheus:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    restart: unless-stopped
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
