@@ -9,3 +9,4 @@ omnivore/
 certs/
 index.html
 apps/
+.crush/

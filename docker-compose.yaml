@@ -1,6 +1,6 @@
 services:
   actual_server:
-    image: docker.io/actualbudget/actual-server:25.7.1
+    image: docker.io/actualbudget/actual-server:25.9.0
     container_name: actual_server
     ports:
       - '5006:5006'
@@ -24,7 +24,7 @@ services:
     build: ../niraj8/track
     container_name: tracker
     ports:
-      - "3000:3000"
+      - "3030:3000"  # host:container (host port 3030 maps to container port 3000)
     env_file:
       - tracker.env
     environment:
@@ -78,7 +78,7 @@ services:
     image: nginx:1.29.0-alpine
     container_name: nginx
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
