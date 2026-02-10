@@ -45,3 +45,16 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
+
+  shiori:
+    image: ghcr.io/go-shiori/shiori:latest
+    container_name: shiori
+    ports:
+      - "8082:8080"
+    environment:
+      SHIORI_DATABASE_URL: ${SHIORI_DATABASE_URL}
+      SHIORI_HTTP_SECRET_KEY: ${SHIORI_HTTP_SECRET_KEY}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
