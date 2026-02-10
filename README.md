@@ -2,9 +2,10 @@
 
 In docker-compose.yaml
 - [Actual Budget](https://actualbudget.org) - Budgeting software
-- Tracker - Custom Tracker with Google Sheets as data source
-- [ArchiveBox](https://archivebox.io/) - Web archival tool
-- Prometheus & Grafana
+- Tracker - Custom tracker with Google Sheets as data source
+- Nginx - Reverse proxy / landing page
+- PostgreSQL - Shared database
+- [Shiori](https://github.com/go-shiori/shiori) - Bookmark manager
 
 Others
 - Jellyfin
