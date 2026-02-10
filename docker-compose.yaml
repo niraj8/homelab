@@ -4,16 +4,6 @@ services:
     container_name: actual_server
     ports:
       - '5006:5006'
-    # environment: 
-      # Uncomment any of the lines below to set configuration options.
-      # - ACTUAL_HTTPS_KEY=${ACTUAL_HTTPS_KEY}
-      # - ACTUAL_HTTPS_CERT=${ACTUAL_HTTPS_CERT}
-      # - ACTUAL_PORT=5006
-      # - ACTUAL_UPLOAD_FILE_SYNC_SIZE_LIMIT_MB=20
-      # - ACTUAL_UPLOAD_SYNC_ENCRYPTED_FILE_SYNC_SIZE_LIMIT_MB=50
-      # - ACTUAL_UPLOAD_FILE_SIZE_LIMIT_MB=20
-      # See all options and more details at https://actualbudget.github.io/docs/Installing/Configuration
-      # !! If you are not using any of these options, remove the 'environment:' tag entirely.
     volumes:
       # Change './actual-data' below to the path to the folder you want Actual to store its data in on your server.
       # '/data' is the path Actual will look for its files in by default, so leave that as-is.
@@ -33,47 +23,6 @@ services:
       - ./data/tracker:/data
     restart: unless-stopped
 
-  #########################################################################################
-  # Archivebox
-  # sourced from https://github.com/ArchiveBox/ArchiveBox/blob/dev/docker-compose.yml
-  #########################################################################################
-  archivebox:
-    image: archivebox/archivebox:latest
-    container_name: archivebox
-    ports:
-        - 8000:8000
-    volumes:
-        - ./data/archivebox:/data
-    environment:
-        - ALLOWED_HOSTS=*                   # set this to the hostname(s) you're going to serve the site from!
-        - CSRF_TRUSTED_ORIGINS=http://localhost:8000  # you MUST set this to the server's URL for admin login and the REST API to work
-        - PUBLIC_INDEX=True                 # set to False to prevent anonymous users from viewing snapshot list
-        - PUBLIC_SNAPSHOTS=True             # set to False to prevent anonymous users from viewing snapshot content
-        - PUBLIC_ADD_VIEW=False             # set to True to allow anonymous users to submit new URLs to archive
-        - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
-        - SEARCH_BACKEND_HOST_NAME=sonic
-        - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
-  archivebox_scheduler:
-    image: archivebox/archivebox:latest
-    container_name: archivebox_scheduler
-    command: schedule --foreground --update --every=day
-    environment:
-        - TIMEOUT=120                       # use a higher timeout than the main container to give slow tasks more time when retrying
-        - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
-        - SEARCH_BACKEND_HOST_NAME=sonic
-        - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
-    volumes:
-        - ./data/archivebox:/data
-  sonic:
-    image: archivebox/sonic:latest
-    container_name: archivebox_sonic
-    expose:
-        - 1491
-    environment:
-        - SEARCH_BACKEND_PASSWORD=${ARCHIVEBOX_SEARCH_BACKEND_PASSWORD}
-    volumes:
-        #- ./sonic.cfg:/etc/sonic.cfg:ro    # mount to customize: https://raw.githubusercontent.com/ArchiveBox/ArchiveBox/stable/etc/sonic.cfg
-        - ./data/archivebox/sonic:/var/lib/sonic/store
   nginx:
     image: nginx:1.29.0-alpine
     container_name: nginx
@@ -83,23 +32,7 @@ services:
       - ./index.html:/usr/share/nginx/html/index.html
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
     restart: unless-stopped
-  # grafana:
-  #   image: grafana/grafana-enterprise
-  #   container_name: grafana
-  #   restart: unless-stopped
-  #   ports:
-  #    - '9091:3000'
-  #   volumes:
-  #     - ./data/grafana:/var/lib/grafana
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   container_name: prometheus
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./data/prometheus:/prometheus
-  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-  #   restart: unless-stopped
+
   postgres:
     image: postgres:16
     ports:
