@@ -1,6 +1,6 @@
 services:
   actual_server:
-    image: docker.io/actualbudget/actual-server:25.9.0
+    image: docker.io/actualbudget/actual-server:26.2.0
     container_name: actual_server
     ports:
       - '5006:5006'
@@ -9,19 +9,18 @@ services:
       # '/data' is the path Actual will look for its files in by default, so leave that as-is.
       - ./data/actual-budget:/data
     restart: unless-stopped
-
-  tracker:
-    build: ../niraj8/track
-    container_name: tracker
-    ports:
-      - "3030:3000"  # host:container (host port 3030 maps to container port 3000)
-    env_file:
-      - tracker.env
-    environment:
-      NODE_ENV: production
-    volumes:
-      - ./data/tracker:/data
-    restart: unless-stopped
+  # tracker:
+  #   build: ../niraj8/track
+  #   container_name: tracker
+  #   ports:
+  #     - "3030:3000"  # host:container (host port 3030 maps to container port 3000)
+  #   env_file:
+  #     - tracker.env
+  #   environment:
+  #     NODE_ENV: production
+  #   volumes:
+  #     - ./data/tracker:/data
+  #   restart: unless-stopped
 
   nginx:
     image: nginx:1.29.0-alpine
@@ -29,8 +28,12 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html
+      - ./index.html:/etc/nginx/templates/index.html.template:ro
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
+    environment:
+      - TAILSCALE_HOST=${TAILSCALE_HOST}
+      - POSTHOG_URL=${POSTHOG_URL}
+    command: /bin/sh -c "envsubst '$$TAILSCALE_HOST $$POSTHOG_URL' < /etc/nginx/templates/index.html.template > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
     restart: unless-stopped
 
   postgres:
@@ -47,7 +50,8 @@ services:
       - ./init-scripts:/docker-entrypoint-initdb.d
 
   shiori:
-    image: ghcr.io/go-shiori/shiori:latest
+    # image: ghcr.io/go-shiori/shiori:latest
+    image: shiori:localdev
     container_name: shiori
     ports:
       - "8082:8080"

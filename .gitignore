@@ -7,6 +7,5 @@ omnivore/
 .tmp.driveupload/
 .tmp.drivedownload/
 certs/
-index.html
 apps/
 .crush/

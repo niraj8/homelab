@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="crt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>homelab</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Quicksand:wght@400;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    /* =========================================================
+       RESET & SHARED
+    ========================================================= */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-area {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      font-family: 'Press Start 2P', cursive;
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
+      animation: float 3.5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    @keyframes slide-in {
+      from {
+        opacity: 0;
+        transform: translateX(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .links {
+      list-style: none;
+    }
+
+    .links li {
+      opacity: 0;
+      animation: slide-in 0.3s ease forwards;
+    }
+
+    .links li:nth-child(1) {
+      animation-delay: 0.10s;
+    }
+
+    .links li:nth-child(2) {
+      animation-delay: 0.20s;
+    }
+
+    .links li:nth-child(3) {
+      animation-delay: 0.30s;
+    }
+
+    .links li:nth-child(4) {
+      animation-delay: 0.40s;
+    }
+
+    .links li:nth-child(5) {
+      animation-delay: 0.50s;
+    }
+
+    .status {
+      text-align: center;
+    }
+
+    .status em {
+      font-style: normal;
+    }
+
+    .rule {
+      border: none;
+      margin-bottom: 14px;
+    }
+
+    .links a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .svc-icon {
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .svc-name {
+      flex-shrink: 0;
+    }
+
+    /* =========================================================
+       CRT THEME
+    ========================================================= */
+    html[data-theme="crt"] body {
+      font-family: 'VT323', monospace;
+      background: #030804;
+      color: #4afe82;
+    }
+
+    /* Scanlines */
+    html[data-theme="crt"] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.13) 2px,
+          rgba(0, 0, 0, 0.13) 4px);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Vignette */
+    html[data-theme="crt"] body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 90% 85% at 50% 50%,
+          transparent 45%,
+          rgba(0, 0, 0, 0.82) 100%);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    html[data-theme="crt"] .screen {
+      border: 1px solid #1f6b3a;
+      padding: 32px 30px 26px;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(74, 254, 130, 0.06),
+        0 0 40px rgba(74, 254, 130, 0.04),
+        inset 0 0 80px rgba(74, 254, 130, 0.015);
+    }
+
+    html[data-theme="crt"] .screen::before {
+      content: '◆ ◆ ◆';
+      font-family: 'VT323', monospace;
+      font-size: 0.85rem;
+      color: #1f6b3a;
+      letter-spacing: 3px;
+      background: #030804;
+      padding: 0 10px;
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    html[data-theme="crt"] .screen::after {
+      content: '── HOMELAB OS v1.0 ──';
+      font-family: 'VT323', monospace;
+      font-size: 1rem;
+      color: #1f6b3a;
+      letter-spacing: 1px;
+      background: #030804;
+      padding: 0 10px;
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    html[data-theme="crt"] .logo {
+      font-size: 1.6rem;
+      color: #d4ffe4;
+      text-shadow:
+        0 0 8px #4afe82,
+        0 0 25px rgba(74, 254, 130, 0.6),
+        0 0 60px rgba(74, 254, 130, 0.25);
+    }
+
+    html[data-theme="crt"] .cursor {
+      display: inline-block;
+      width: 0.8rem;
+      height: 1.4rem;
+      background: #4afe82;
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+      box-shadow: 0 0 8px #4afe82;
+      position: relative;
+      top: -1px;
+    }
+
+    html[data-theme="crt"] .status {
+      font-size: 1.35rem;
+      color: #1f6b3a;
+      margin-bottom: 18px;
+      letter-spacing: 0.06em;
+    }
+
+    html[data-theme="crt"] .status em {
+      color: #2db85a;
+    }
+
+    html[data-theme="crt"] .rule {
+      border-top: 1px solid #1f6b3a;
+      opacity: 0.45;
+    }
+
+    html[data-theme="crt"] .links a {
+      padding: 8px 10px;
+      color: #4afe82;
+      font-size: 1.85rem;
+      letter-spacing: 0.03em;
+      border-radius: 2px;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+
+    html[data-theme="crt"] .links a:hover {
+      background: rgba(74, 254, 130, 0.09);
+      color: #d4ffe4;
+      text-shadow: 0 0 10px #4afe82;
+    }
+
+    html[data-theme="crt"] .prompt {
+      display: inline;
+      color: #1f6b3a;
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+
+    html[data-theme="crt"] .links a:hover .prompt {
+      color: #2db85a;
+    }
+
+    html[data-theme="crt"] .svc-icon {
+      font-size: 1.2rem;
+      margin-right: 9px;
+      position: relative;
+      top: 1px;
+    }
+
+    html[data-theme="crt"] .leader {
+      display: block;
+      flex: 1;
+      overflow: hidden;
+      color: #1f6b3a;
+      margin: 0 8px;
+      white-space: nowrap;
+      opacity: 0.5;
+    }
+
+    html[data-theme="crt"] .leader::after {
+      content: '···············································';
+    }
+
+    html[data-theme="crt"] .svc-addr {
+      display: inline;
+      flex-shrink: 0;
+      color: #1f6b3a;
+      font-size: 1.55rem;
+    }
+
+    html[data-theme="crt"] .links a:hover .svc-addr {
+      color: #2db85a;
+    }
+
+    html[data-theme="crt"] .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #1f6b3a;
+      letter-spacing: 0.1em;
+    }
+
+    html[data-theme="crt"] .ready-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #2db85a;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      box-shadow: 0 0 6px #2db85a;
+      animation: pulse 2s ease-in-out infinite;
+      position: relative;
+      top: -1px;
+    }
+
+    /* =========================================================
+       DASHBOARD THEME
+    ========================================================= */
+    html[data-theme="dashboard"] body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #0a0a0f;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(100, 60, 200, 0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(15, 10, 30, 0.6) 0%, transparent 70%);
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    /* Noise grain */
+    html[data-theme="dashboard"] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.032;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    html[data-theme="dashboard"] .screen {
+      border: none;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    html[data-theme="dashboard"] .screen::before,
+    html[data-theme="dashboard"] .screen::after {
+      display: none;
+    }
+
+    html[data-theme="dashboard"] .logo {
+      font-size: 1.4rem;
+      color: #d90429;
+      text-shadow:
+        0 0 18px rgba(217, 4, 41, 0.95),
+        0 0 40px rgba(217, 4, 41, 0.5),
+        0 0 80px rgba(217, 4, 41, 0.2),
+        2px 2px 0 #2a000c;
+    }
+
+    html[data-theme="dashboard"] .cursor {
+      display: none;
+    }
+
+    html[data-theme="dashboard"] .status {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.22);
+    }
+
+    html[data-theme="dashboard"] .rule {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    html[data-theme="dashboard"] .links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    html[data-theme="dashboard"] .links a {
+      padding: 13px 18px;
+      color: rgba(255, 255, 255, 0.82);
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 0.93rem;
+      letter-spacing: 0.02em;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-left-width: 3px;
+      border-radius: 7px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.25s ease, color 0.2s ease;
+    }
+
+    html[data-theme="dashboard"] .links a:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    html[data-theme="dashboard"] .prompt,
+    html[data-theme="dashboard"] .leader,
+    html[data-theme="dashboard"] .svc-addr {
+      display: none;
+    }
+
+    html[data-theme="dashboard"] .svc-icon {
+      font-size: 1.1rem;
+      margin-right: 12px;
+    }
+
+    /* Brand border + glow */
+    html[data-theme="dashboard"] .actual-link {
+      border-left-color: #6236C1;
+    }
+
+    html[data-theme="dashboard"] .actual-link:hover {
+      box-shadow: 0 6px 28px rgba(98, 54, 193, 0.28), inset 0 0 0 1px rgba(98, 54, 193, 0.18);
+    }
+
+    html[data-theme="dashboard"] .jellyfin-link {
+      border-left-color: #AA5CC3;
+    }
+
+    html[data-theme="dashboard"] .jellyfin-link:hover {
+      box-shadow: 0 6px 28px rgba(170, 92, 195, 0.28), inset 0 0 0 1px rgba(170, 92, 195, 0.18);
+    }
+
+    html[data-theme="dashboard"] .shiori-link {
+      border-left-color: #1EB980;
+    }
+
+    html[data-theme="dashboard"] .shiori-link:hover {
+      box-shadow: 0 6px 28px rgba(30, 185, 128, 0.28), inset 0 0 0 1px rgba(30, 185, 128, 0.18);
+    }
+
+    html[data-theme="dashboard"] .compass-link {
+      border-left-color: #C08B5C;
+    }
+
+    html[data-theme="dashboard"] .compass-link:hover {
+      box-shadow: 0 6px 28px rgba(192, 139, 92, 0.28), inset 0 0 0 1px rgba(192, 139, 92, 0.18);
+    }
+
+    html[data-theme="dashboard"] .posthog-link {
+      border-left-color: #F54E00;
+    }
+
+    html[data-theme="dashboard"] .posthog-link:hover {
+      box-shadow: 0 6px 28px rgba(245, 78, 0, 0.28), inset 0 0 0 1px rgba(245, 78, 0, 0.18);
+    }
+
+    html[data-theme="dashboard"] .footer {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="terminal">
+    <div class="screen">
+      <div class="logo-area">
+        <span class="logo" title="click to switch theme">homelab</span><span class="cursor"></span>
+      </div>
+
+      <div id="localhost-section" style="display: none;">
+        <p class="status">HOST: <em>localhost</em></p>
+        <hr class="rule">
+        <ul class="links">
+          <li>
+            <a href="http://localhost:4284" class="compass-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🧭</span>
+              <span class="svc-name">compass</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:4284</span>
+            </a>
+          </li>
+          <li>
+            <a href="http://localhost:8082" class="shiori-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🔖</span>
+              <span class="svc-name">shiori</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:8082</span>
+            </a>
+          </li>
+          <li>
+            <a href="http://localhost:5006" class="actual-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">💰</span>
+              <span class="svc-name">actual-budget</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:5006</span>
+            </a>
+          </li>
+          <!-- <li><a href="http://localhost:8000" class="archivebox-link"><span class="prompt">&gt;</span><span class="svc-icon">📦</span><span class="svc-name">archivebox</span><span class="leader"></span><span class="svc-addr">:8000</span></a></li> -->
+          <!-- <li><a href="http://localhost:3030" class="tracker-link"><span class="prompt">&gt;</span><span class="svc-icon">📊</span><span class="svc-name">tracker</span><span class="leader"></span><span class="svc-addr">:3030</span></a></li> -->
+          <li>
+            <a href="http://localhost:8096" class="jellyfin-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🎬</span>
+              <span class="svc-name">jellyfin</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:8096</span>
+            </a>
+          </li>
+          <!-- <li><a href="http://localhost:9091" class="grafana-link"><span class="prompt">&gt;</span><span class="svc-icon">📉</span><span class="svc-name">grafana</span><span class="leader"></span><span class="svc-addr">:9091</span></a></li> -->
+          <li>
+            <a href="${POSTHOG_URL}" class="posthog-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">📈</span>
+              <span class="svc-name">posthog</span>
+              <span class="leader"></span>
+              <span class="svc-addr">↗ ext</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div id="tailscale-section" style="display: none;">
+        <p class="status">HOST: <em>tailscale</em></p>
+        <hr class="rule">
+        <ul class="links">
+          <!-- <li><a href="http://${TAILSCALE_HOST}:8000" class="archivebox-link"><span class="prompt">&gt;</span><span class="svc-icon">📦</span><span class="svc-name">archivebox</span><span class="leader"></span><span class="svc-addr">:8000</span></a></li> -->
+          <!-- <li><a href="http://${TAILSCALE_HOST}:3030" class="tracker-link"><span class="prompt">&gt;</span><span class="svc-icon">📊</span><span class="svc-name">tracker</span><span class="leader"></span><span class="svc-addr">:3030</span></a></li> -->
+          <li>
+            <a href="http://${TAILSCALE_HOST}:4284" class="compass-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🧭</span>
+              <span class="svc-name">compass</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:4284</span>
+            </a>
+          </li>
+          <li>
+            <a href="http://${TAILSCALE_HOST}:8082" class="shiori-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🔖</span>
+              <span class="svc-name">shiori</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:8082</span>
+            </a>
+          </li>
+          <li>
+            <a href="http://${TAILSCALE_HOST}:8096" class="jellyfin-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🎬</span>
+              <span class="svc-name">jellyfin</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:8096</span>
+            </a>
+          </li>
+          <!-- <li><a href="http://${TAILSCALE_HOST}:9091" class="grafana-link"><span class="prompt">&gt;</span><span class="svc-icon">📉</span><span class="svc-name">grafana</span><span class="leader"></span><span class="svc-addr">:9091</span></a></li> -->
+          <li>
+            <a href="${POSTHOG_URL}" class="posthog-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">📈</span>
+              <span class="svc-name">posthog</span>
+              <span class="leader"></span>
+              <span class="svc-addr">↗ ext</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <p class="footer"><span class="ready-dot"></span>SYS READY</p>
+    </div>
+  </div>
+
+  <script>
+    // Localhost vs Tailscale
+    const isTailscaleHost = window.location.hostname.includes('${TAILSCALE_HOST}');
+    document.getElementById('localhost-section').style.display = isTailscaleHost ? 'none' : 'block';
+    document.getElementById('tailscale-section').style.display = isTailscaleHost ? 'block' : 'none';
+
+    // Theme cycling — click the logo to switch
+    const themes = ['crt', 'dashboard'];
+    let currentTheme = localStorage.getItem('hl-theme') || 'crt';
+    document.documentElement.dataset.theme = currentTheme;
+
+    document.querySelector('.logo').addEventListener('click', () => {
+      currentTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+      document.documentElement.dataset.theme = currentTheme;
+      localStorage.setItem('hl-theme', currentTheme);
+    });
+  </script>
+</body>
+
+</html>
