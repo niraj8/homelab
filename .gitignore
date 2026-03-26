@@ -9,3 +9,5 @@ omnivore/
 certs/
 apps/
 .crush/
+scripts/node_modules/
+scripts/auto-categorize-proposals.json
