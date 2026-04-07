@@ -480,6 +480,14 @@
       box-shadow: 0 6px 28px rgba(192, 139, 92, 0.28), inset 0 0 0 1px rgba(192, 139, 92, 0.18);
     }
 
+    html[data-theme="dashboard"] .searxng-link {
+      border-left-color: #3050FF;
+    }
+
+    html[data-theme="dashboard"] .searxng-link:hover {
+      box-shadow: 0 6px 28px rgba(48, 80, 255, 0.28), inset 0 0 0 1px rgba(48, 80, 255, 0.18);
+    }
+
     html[data-theme="dashboard"] .posthog-link {
       border-left-color: #F54E00;
     }
@@ -535,6 +543,15 @@
           <!-- <li><a href="http://localhost:8000" class="archivebox-link"><span class="prompt">&gt;</span><span class="svc-icon">📦</span><span class="svc-name">archivebox</span><span class="leader"></span><span class="svc-addr">:8000</span></a></li> -->
           <!-- <li><a href="http://localhost:3030" class="tracker-link"><span class="prompt">&gt;</span><span class="svc-icon">📊</span><span class="svc-name">tracker</span><span class="leader"></span><span class="svc-addr">:3030</span></a></li> -->
           <li>
+            <a href="http://localhost:8083" class="searxng-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🔍</span>
+              <span class="svc-name">searxng</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:8083</span>
+            </a>
+          </li>
+          <li>
             <a href="http://localhost:8096" class="jellyfin-link">
               <span class="prompt">&gt;</span>
               <span class="svc-icon">🎬</span>
@@ -578,6 +595,15 @@
               <span class="svc-name">shiori</span>
               <span class="leader"></span>
               <span class="svc-addr">:8082</span>
+            </a>
+          </li>
+          <li>
+            <a href="http://${TAILSCALE_HOST}:8083" class="searxng-link">
+              <span class="prompt">&gt;</span>
+              <span class="svc-icon">🔍</span>
+              <span class="svc-name">searxng</span>
+              <span class="leader"></span>
+              <span class="svc-addr">:8083</span>
             </a>
           </li>
           <li>

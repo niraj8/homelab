@@ -62,3 +62,14 @@ services:
       - postgres
     restart: unless-stopped
 
+  searxng:
+    image: docker.io/searxng/searxng:2026.4.7-08ef7a63d
+    container_name: searxng
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./data/searxng:/etc/searxng
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8083/
+    restart: unless-stopped
+
