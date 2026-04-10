@@ -54,6 +54,9 @@ services:
     environment:
       SHIORI_DATABASE_URL: ${SHIORI_DATABASE_URL}
       SHIORI_HTTP_SECRET_KEY: ${SHIORI_HTTP_SECRET_KEY}
+      SHIORI_SSO_PROXY_AUTH_ENABLED: "true"
+      SHIORI_SSO_PROXY_AUTH_HEADER_NAME: Remote-User
+      SHIORI_SSO_PROXY_AUTH_TRUSTED: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
     depends_on:
       - postgres
     restart: unless-stopped
