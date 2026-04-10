@@ -1,0 +1,23 @@
+(tls_tailscale) {
+  tls /certs/{$TAILSCALE_HOST}.crt /certs/{$TAILSCALE_HOST}.key
+}
+
+:8080 {
+  import tls_tailscale
+  reverse_proxy nginx:80
+}
+
+:5006 {
+  import tls_tailscale
+  reverse_proxy actual_server:5006
+}
+
+:8082 {
+  import tls_tailscale
+  reverse_proxy shiori:8080
+}
+
+:8083 {
+  import tls_tailscale
+  reverse_proxy searxng:8080
+}

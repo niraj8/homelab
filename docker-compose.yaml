@@ -1,32 +1,30 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    ports:
+      - "8080:8080"
+      - "5006:5006"
+      - "8082:8082"
+      - "8083:8083"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/certs:/certs:ro
+      - ./data/caddy:/data
+    environment:
+      - TAILSCALE_HOST=${TAILSCALE_HOST}
+    restart: unless-stopped
+
   actual_server:
     image: docker.io/actualbudget/actual-server:26.4.0
     container_name: actual_server
-    ports:
-      - '5006:5006'
     volumes:
-      # Change './actual-data' below to the path to the folder you want Actual to store its data in on your server.
-      # '/data' is the path Actual will look for its files in by default, so leave that as-is.
       - ./data/actual-budget:/data
     restart: unless-stopped
-  # tracker:
-  #   build: ../niraj8/track
-  #   container_name: tracker
-  #   ports:
-  #     - "3030:3000"  # host:container (host port 3030 maps to container port 3000)
-  #   env_file:
-  #     - tracker.env
-  #   environment:
-  #     NODE_ENV: production
-  #   volumes:
-  #     - ./data/tracker:/data
-  #   restart: unless-stopped
 
   nginx:
     image: nginx:1.29.0-alpine
     container_name: nginx
-    ports:
-      - "8080:80"
     volumes:
       - ./index.html:/etc/nginx/templates/index.html.template:ro
       - ./favicon.ico:/usr/share/nginx/html/favicon.ico
@@ -53,8 +51,6 @@ services:
     # image: ghcr.io/go-shiori/shiori:latest
     image: shiori:localdev
     container_name: shiori
-    ports:
-      - "8082:8080"
     environment:
       SHIORI_DATABASE_URL: ${SHIORI_DATABASE_URL}
       SHIORI_HTTP_SECRET_KEY: ${SHIORI_HTTP_SECRET_KEY}
@@ -65,8 +61,6 @@ services:
   searxng:
     image: docker.io/searxng/searxng:2026.4.7-08ef7a63d
     container_name: searxng
-    ports:
-      - "8083:8080"
     volumes:
       - ./data/searxng:/etc/searxng
     environment:

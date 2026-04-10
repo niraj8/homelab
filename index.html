@@ -509,144 +509,70 @@
         <span class="logo" title="click to switch theme">homelab</span><span class="cursor"></span>
       </div>
 
-      <div id="localhost-section" style="display: none;">
-        <p class="status">HOST: <em>localhost</em></p>
-        <hr class="rule">
-        <ul class="links">
-          <li>
-            <a href="http://localhost:4284" class="compass-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🧭</span>
-              <span class="svc-name">compass</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:4284</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://localhost:8082" class="shiori-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🔖</span>
-              <span class="svc-name">shiori</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:8082</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://localhost:5006" class="actual-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">💰</span>
-              <span class="svc-name">actual-budget</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:5006</span>
-            </a>
-          </li>
-          <!-- <li><a href="http://localhost:8000" class="archivebox-link"><span class="prompt">&gt;</span><span class="svc-icon">📦</span><span class="svc-name">archivebox</span><span class="leader"></span><span class="svc-addr">:8000</span></a></li> -->
-          <!-- <li><a href="http://localhost:3030" class="tracker-link"><span class="prompt">&gt;</span><span class="svc-icon">📊</span><span class="svc-name">tracker</span><span class="leader"></span><span class="svc-addr">:3030</span></a></li> -->
-          <li>
-            <a href="http://localhost:8083" class="searxng-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🔍</span>
-              <span class="svc-name">searxng</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:8083</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://localhost:8096" class="jellyfin-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🎬</span>
-              <span class="svc-name">jellyfin</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:8096</span>
-            </a>
-          </li>
-          <!-- <li><a href="http://localhost:9091" class="grafana-link"><span class="prompt">&gt;</span><span class="svc-icon">📉</span><span class="svc-name">grafana</span><span class="leader"></span><span class="svc-addr">:9091</span></a></li> -->
-          <li>
-            <a href="${POSTHOG_URL}" class="posthog-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">📈</span>
-              <span class="svc-name">posthog</span>
-              <span class="leader"></span>
-              <span class="svc-addr">↗ ext</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div id="tailscale-section" style="display: none;">
-        <p class="status">HOST: <em>tailscale</em></p>
-        <hr class="rule">
-        <ul class="links">
-          <!-- <li><a href="http://${TAILSCALE_HOST}:8000" class="archivebox-link"><span class="prompt">&gt;</span><span class="svc-icon">📦</span><span class="svc-name">archivebox</span><span class="leader"></span><span class="svc-addr">:8000</span></a></li> -->
-          <!-- <li><a href="http://${TAILSCALE_HOST}:3030" class="tracker-link"><span class="prompt">&gt;</span><span class="svc-icon">📊</span><span class="svc-name">tracker</span><span class="leader"></span><span class="svc-addr">:3030</span></a></li> -->
-          <li>
-            <a href="http://${TAILSCALE_HOST}:4284" class="compass-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🧭</span>
-              <span class="svc-name">compass</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:4284</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://${TAILSCALE_HOST}:8082" class="shiori-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🔖</span>
-              <span class="svc-name">shiori</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:8082</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://${TAILSCALE_HOST}:5006" class="actual-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">💰</span>
-              <span class="svc-name">actual-budget</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:5006</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://${TAILSCALE_HOST}:8083" class="searxng-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🔍</span>
-              <span class="svc-name">searxng</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:8083</span>
-            </a>
-          </li>
-          <li>
-            <a href="http://${TAILSCALE_HOST}:8096" class="jellyfin-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">🎬</span>
-              <span class="svc-name">jellyfin</span>
-              <span class="leader"></span>
-              <span class="svc-addr">:8096</span>
-            </a>
-          </li>
-          <!-- <li><a href="http://${TAILSCALE_HOST}:9091" class="grafana-link"><span class="prompt">&gt;</span><span class="svc-icon">📉</span><span class="svc-name">grafana</span><span class="leader"></span><span class="svc-addr">:9091</span></a></li> -->
-          <li>
-            <a href="${POSTHOG_URL}" class="posthog-link">
-              <span class="prompt">&gt;</span>
-              <span class="svc-icon">📈</span>
-              <span class="svc-name">posthog</span>
-              <span class="leader"></span>
-              <span class="svc-addr">↗ ext</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <p class="status">HOST: <em>${TAILSCALE_HOST}</em></p>
+      <hr class="rule">
+      <ul class="links">
+        <li>
+          <a href="https://${TAILSCALE_HOST}:4284" class="compass-link">
+            <span class="prompt">&gt;</span>
+            <span class="svc-icon">🧭</span>
+            <span class="svc-name">compass</span>
+            <span class="leader"></span>
+            <span class="svc-addr">:4284</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://${TAILSCALE_HOST}:8082" class="shiori-link">
+            <span class="prompt">&gt;</span>
+            <span class="svc-icon">🔖</span>
+            <span class="svc-name">shiori</span>
+            <span class="leader"></span>
+            <span class="svc-addr">:8082</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://${TAILSCALE_HOST}:5006" class="actual-link">
+            <span class="prompt">&gt;</span>
+            <span class="svc-icon">💰</span>
+            <span class="svc-name">actual-budget</span>
+            <span class="leader"></span>
+            <span class="svc-addr">:5006</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://${TAILSCALE_HOST}:8083" class="searxng-link">
+            <span class="prompt">&gt;</span>
+            <span class="svc-icon">🔍</span>
+            <span class="svc-name">searxng</span>
+            <span class="leader"></span>
+            <span class="svc-addr">:8083</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://${TAILSCALE_HOST}:8096" class="jellyfin-link">
+            <span class="prompt">&gt;</span>
+            <span class="svc-icon">🎬</span>
+            <span class="svc-name">jellyfin</span>
+            <span class="leader"></span>
+            <span class="svc-addr">:8096</span>
+          </a>
+        </li>
+        <li>
+          <a href="${POSTHOG_URL}" class="posthog-link">
+            <span class="prompt">&gt;</span>
+            <span class="svc-icon">📈</span>
+            <span class="svc-name">posthog</span>
+            <span class="leader"></span>
+            <span class="svc-addr">↗ ext</span>
+          </a>
+        </li>
+      </ul>
 
       <p class="footer"><span class="ready-dot"></span>SYS READY</p>
     </div>
   </div>
 
   <script>
-    // Localhost vs Tailscale
-    const isTailscaleHost = window.location.hostname.includes('${TAILSCALE_HOST}');
-    document.getElementById('localhost-section').style.display = isTailscaleHost ? 'none' : 'block';
-    document.getElementById('tailscale-section').style.display = isTailscaleHost ? 'block' : 'none';
-
     // Theme cycling — click the logo to switch
     const themes = ['crt', 'dashboard'];
     let currentTheme = localStorage.getItem('hl-theme') || 'crt';
